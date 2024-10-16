@@ -1,0 +1,55 @@
+import speech_recognition as sr
+        with sr.AudioFile(file_path) as source:
+            audio = recognizer.record(source)
+        text = recognizer.recognize_google(audio)
+        print("Audio file contains: " + text)
+        return text
+    except sr.UnknownValueError:
+        print("Google Speech Recognition could not understand the audio")
+        return None
+    except sr.RequestError as e:
+        print("Could not request results from Google Speech Recognition service; {0}".format(e))
+        return None
+
+def recognize_speech_from_microphone():
+    recognizer = sr.Recognizer()
+    try:
+        with sr.Microphone() as source:
+            print("Please wait. Calibrating microphone...")
+            recognizer.adjust_for_ambient_noise(source, duration=5)
+            print("Microphone calibrated. Say something!")
+            audio = recognizer.listen(source)
+        text = recognizer.recognize_google(audio)
+        print("You said: " + text)
+        return text
+    except sr.UnknownValueError:
+        print("Google Speech Recognition could not understand the audio")
+        return None
+    except sr.RequestError as e:
+        print("Could not request results from Google Speech Recognition service; {0}".format(e))
+        return None
+
+def save_text_to_file(text, file_path):
+    with open(file_path, 'w') as file:
+        file.write(text)
+    print(f"Text saved to {file_path}")
+
+def main():
+    choice = input("Choose an option (1: Recognize from file, 2: Recognize from microphone): ")
+    
+    if choice == '1':
+        file_path = input("Enter the path to the audio file: ")
+        recognized_text = recognize_speech_from_file(file_path)
+        if recognized_text:
+            save_text_to_file(recognized_text, "recognized_text_from_file.txt")
+    
+    elif choice == '2':
+        recognized_text = recognize_speech_from_microphone()
+        if recognized_text:
+            save_text_to_file(recognized_text, "recognized_text_from_microphone.txt")
+    
+    else:
+        print("Invalid choice. Please choose 1 or 2.")
+
+if _name_ == "_main_":
+    main()
